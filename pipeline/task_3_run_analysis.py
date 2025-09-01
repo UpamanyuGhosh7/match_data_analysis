@@ -21,8 +21,7 @@ def run_analysis(input_path):
     SPRINT_THRESHOLD = 7.0
     PENALTY_BOX_X_MIN = 105 / 2 - 16.5
     
-    # --- FIXED LINE ---
-    # The .sum() is now inside the apply function to calculate the sum for each player.
+    
     sprints_into_box = players_df.groupby('participation_id').apply(
         lambda df: ((df['speed_smooth'] > SPRINT_THRESHOLD) & (df['x_smooth'] > PENALTY_BOX_X_MIN) & ~((df['speed_smooth'] > SPRINT_THRESHOLD) & (df['x_smooth'] > PENALTY_BOX_X_MIN)).shift(1).fillna(False)).sum()
     )
@@ -31,7 +30,7 @@ def run_analysis(input_path):
     print("\n## Sprints into the Penalty Box (Top 5)")
     print(box_entry_leaderboard.head().to_markdown(index=False))
 
-    # --- New Leaderboards ---
+    # --- Leaderboards ---
     # Total Distance
     total_distances = players_df.groupby('participation_id').apply(lambda df: np.sqrt(df['x_smooth'].diff()**2 + df['y_smooth'].diff()**2).sum())
     distance_leaderboard_top5 = total_distances.reset_index(name='Total Distance (m)').sort_values(by='Total Distance (m)', ascending=False).head(5)
@@ -60,4 +59,5 @@ def run_analysis(input_path):
     print("\nAnalysis complete.")
 
 if __name__ == "__main__":
+
     run_analysis(input_path='F:/PD_task/task/pipeline/output')
