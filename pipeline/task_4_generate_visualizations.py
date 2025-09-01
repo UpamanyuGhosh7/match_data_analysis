@@ -73,7 +73,7 @@ def generate_visualizations(input_path, output_path):
     ax2 = sns.barplot(x='Distance in Zone 5 (m)', y='participation_id', data=zone_leaderboard_top5, palette='plasma', orient='h')
     ax2.set_title('Top 5 Players by Distance covered in Zone 5 (19.8-25.1 km/h)', fontsize=16)
     plt.tight_layout()
-    plt.savefig(f"{output_path}/sprinting_distance_leaderboard.png")
+    plt.savefig(f"{output_path}/zone_5_distance_leaderboard.png")
 
     plt.figure(figsize=(10, 6))
     ax3 = sns.barplot(x='Top Speed (m/s)', y='participation_id', data=speed_leaderboard_top5, palette='magma', orient='h')
@@ -240,3 +240,4 @@ if __name__ == "__main__":
         input_path='F:/PD_task/task/pipeline/output',
         output_path='F:/PD_task/task/pipeline/output'
     )
+
