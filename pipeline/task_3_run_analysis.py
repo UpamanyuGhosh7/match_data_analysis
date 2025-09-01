@@ -39,15 +39,20 @@ def run_analysis(input_path):
     print("="*50)
     print(distance_leaderboard_top5.to_markdown(index=False, floatfmt=".2f"))
 
-    # Sprinting Distance
-    ZONE_5_THRESHOLD_MS = 25 * (5 / 18)
-    sprinting_distances = players_df.groupby('participation_id').apply(lambda df: np.sqrt(df['x_smooth'].diff()**2 + df['y_smooth'].diff()**2)[df['speed_smooth'] > ZONE_5_THRESHOLD_MS].sum())
-    sprinting_leaderboard_top5 = sprinting_distances.reset_index(name='Sprinting Distance (m)').sort_values(by='Sprinting Distance (m)', ascending=False).head(5)
-    print("\n" + "="*50)
-    print("## Leaderboard: Top 5 Players by Sprinting Distance (Zone 5)")
-    print("="*50)
-    print(sprinting_leaderboard_top5.to_markdown(index=False, floatfmt=".2f"))
-
+    # Distance in Speed Zone 5 (19.8 km/h - 25.1 km/h)
+    ZONE_LOWER_BOUND_MS = 19.8 * (5 / 18)
+    ZONE_UPPER_BOUND_MS = 25.1 * (5 / 18)
+    zone_distances = players_df.groupby('participation_id').apply(
+        lambda df: np.sqrt(df['x_smooth'].diff()**2 + df['y_smooth'].diff()**2)[
+            (df['speed_smooth'] >= ZONE_LOWER_BOUND_MS) & (df['speed_smooth'] <= ZONE_UPPER_BOUND_MS)
+        ].sum()
+    )
+    zone_leaderboard_top5 = zone_distances.reset_index(name='Distance in Zone (m)').sort_values(by='Distance in Zone (m)', ascending=False).head(5)
+    print("\n" + "="*60)
+    print("## Leaderboard: Top 5 Players by Distance covered in Zone 5 (19.8-25.1 km/h)")
+    print("="*60)
+    print(zone_leaderboard_top5.to_markdown(index=False, floatfmt=".2f"))
+    
     # Top Speed
     top_speeds = players_df.groupby('participation_id')['speed_smooth'].max()
     speed_leaderboard_top5 = top_speeds.reset_index(name='Top Speed (m/s)').sort_values(by='Top Speed (m/s)', ascending=False).head(5)
@@ -59,5 +64,4 @@ def run_analysis(input_path):
     print("\nAnalysis complete.")
 
 if __name__ == "__main__":
-
     run_analysis(input_path='F:/PD_task/task/pipeline/output')
