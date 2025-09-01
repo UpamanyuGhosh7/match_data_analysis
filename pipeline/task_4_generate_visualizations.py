@@ -51,10 +51,15 @@ def generate_visualizations(input_path, output_path):
     total_distances = players_df.groupby('participation_id').apply(lambda df: np.sqrt(df['x_smooth'].diff()**2 + df['y_smooth'].diff()**2).sum())
     distance_leaderboard_top5 = total_distances.reset_index(name='Total Distance (m)').sort_values(by='Total Distance (m)', ascending=False).head(5)
     
-    ZONE_5_THRESHOLD_MS = 25 * (5 / 18)
-    sprinting_distances = players_df.groupby('participation_id').apply(lambda df: np.sqrt(df['x_smooth'].diff()**2 + df['y_smooth'].diff()**2)[df['speed_smooth'] > ZONE_5_THRESHOLD_MS].sum())
-    sprinting_leaderboard_top5 = sprinting_distances.reset_index(name='Sprinting Distance (m)').sort_values(by='Sprinting Distance (m)', ascending=False).head(5)
-    
+    # Distance in Speed Zone (19.8 km/h - 25.1 km/h)
+    ZONE_LOWER_BOUND_MS = 19.8 * (5 / 18)
+    ZONE_UPPER_BOUND_MS = 25.1 * (5 / 18)
+    zone_distances = players_df.groupby('participation_id').apply(
+        lambda df: np.sqrt(df['x_smooth'].diff()**2 + df['y_smooth'].diff()**2)[
+            (df['speed_smooth'] >= ZONE_LOWER_BOUND_MS) & (df['speed_smooth'] <= ZONE_UPPER_BOUND_MS)
+        ].sum()
+    )
+    zone_leaderboard_top5 = zone_distances.reset_index(name='Distance in Zone 5 (m)').sort_values(by='Distance in Zone 5 (m)', ascending=False).head(5)
     top_speeds = players_df.groupby('participation_id')['speed_smooth'].max()
     speed_leaderboard_top5 = top_speeds.reset_index(name='Top Speed (m/s)').sort_values(by='Top Speed (m/s)', ascending=False).head(5)
 
@@ -65,8 +70,8 @@ def generate_visualizations(input_path, output_path):
     plt.savefig(f"{output_path}/total_distance_leaderboard.png")
     
     plt.figure(figsize=(10, 6))
-    ax2 = sns.barplot(x='Sprinting Distance (m)', y='participation_id', data=sprinting_leaderboard_top5, palette='plasma', orient='h')
-    ax2.set_title('Top 5 Players by Sprinting Distance (Zone 5)', fontsize=16)
+    ax2 = sns.barplot(x='Distance in Zone 5 (m)', y='participation_id', data=zone_leaderboard_top5, palette='plasma', orient='h')
+    ax2.set_title('Top 5 Players by Distance covered in Zone 5 (19.8-25.1 km/h)', fontsize=16)
     plt.tight_layout()
     plt.savefig(f"{output_path}/sprinting_distance_leaderboard.png")
 
@@ -81,7 +86,6 @@ def generate_visualizations(input_path, output_path):
     fig, ax = plt.subplots(figsize=(16, 10))
     plt.style.use('dark_background')
     ax = draw_pitch(ax)
-
 
     sns.kdeplot(
     x=players_df['x_smooth'],
@@ -235,5 +239,4 @@ if __name__ == "__main__":
     generate_visualizations(
         input_path='F:/PD_task/task/pipeline/output',
         output_path='F:/PD_task/task/pipeline/output'
-
     )
