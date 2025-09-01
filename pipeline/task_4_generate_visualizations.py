@@ -77,22 +77,11 @@ def generate_visualizations(input_path, output_path):
     plt.savefig(f"{output_path}/top_speed_leaderboard.png")
     print("Leaderboard plots saved.")
 
-    # --- Team Positional Heatmap (Corrected) ---
+    # --- Team Positional Heatmap ---
     fig, ax = plt.subplots(figsize=(16, 10))
     plt.style.use('dark_background')
     ax = draw_pitch(ax)
 
-    # sns.kdeplot(
-    #     x=players_df['x_smooth'],
-    #     y=players_df['y_smooth'],
-    #     fill=True,
-    #     cmap="hot",
-    #     n_levels=100,
-    #     alpha=0.7,
-    #     thresh=0.1,
-    #     bw_adjust=0.5,
-    #     ax=ax
-    # )
 
     sns.kdeplot(
     x=players_df['x_smooth'],
@@ -100,7 +89,7 @@ def generate_visualizations(input_path, output_path):
     fill=True,
     cmap="hot",
     n_levels=50,
-    alpha=0.6,  # Set transparency to see the pitch lines underneath
+    alpha=0.6,  
     ax=ax
     )
 
@@ -115,7 +104,7 @@ def generate_visualizations(input_path, output_path):
     plt.savefig(f"{output_path}/team_positional_heatmap.png")
     print("Team positional heatmap saved.")
     
-    # --- Ball Position Heatmap (Corrected) ---
+    # --- Ball Position Heatmap ---
     fs = 10.0
     fc = 1.2
     order = 2
@@ -246,4 +235,5 @@ if __name__ == "__main__":
     generate_visualizations(
         input_path='F:/PD_task/task/pipeline/output',
         output_path='F:/PD_task/task/pipeline/output'
+
     )
